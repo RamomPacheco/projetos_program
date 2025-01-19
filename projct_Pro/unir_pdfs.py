@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 from PyPDF2 import PdfMerger
 
 from PySide6.QtWidgets import (
@@ -15,7 +16,7 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QFileDialog,
 )
-from PySide6.QtCore import Qt, QMimeData, QUrl
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QDragEnterEvent, QDropEvent
 
 
@@ -69,7 +70,7 @@ class PDFMergerApp(QMainWindow):
 
     def dropEvent(self, event: QDropEvent):
         if event.mimeData().hasUrls():
-            event.setDropAction(Qt.CopyAction)
+            event.setDropAction(Qt.CopyAction)  # type: ignore
             event.accept()
 
             for url in event.mimeData().urls():
@@ -96,7 +97,7 @@ class PDFMergerApp(QMainWindow):
         ]
 
         if not files_to_merge:
-            QMessageBox.critical(self, "Erro", "Nenhum arquivo PDF selecionado.")
+            QMessageBox.critical(self, "Erro", "Nenhum arquivo PDF selecionado.") # type: ignore
             return
 
         save_dir = QFileDialog.getExistingDirectory(self, "Salvar PDF unificado")
@@ -110,16 +111,16 @@ class PDFMergerApp(QMainWindow):
         output_file = os.path.join(save_dir, f"{output_filename}.pdf")
 
         self.progress_bar.setValue(0)
-        
+
         try:
             merger = PdfMerger()
             total_files = len(files_to_merge)
 
             for i, file in enumerate(files_to_merge):
                 merger.append(file)
-                self.progress_bar.setValue((i + 1) / total_files * 100)
+                self.progress_bar.setValue((i + 1) / total_files * 100) # type: ignore
                 QApplication.processEvents()
-            
+
             merger.write(output_file)
             merger.close()
 
@@ -128,8 +129,8 @@ class PDFMergerApp(QMainWindow):
                 self,
                 "Concluído",
                 "PDFs unidos com sucesso! Deseja continuar?",
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No,  # Define "Não" como padrão
+                QMessageBox.Yes | QMessageBox.No,  # type: ignore
+                QMessageBox.No,  # Define "Não" como padrão # type: ignore
             )
 
             if reply == QMessageBox.No:
@@ -140,7 +141,6 @@ class PDFMergerApp(QMainWindow):
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao unir os PDFs: {e}")
-        # finally removido, pois a barra de progresso é resetada na condição do 'if' acima.
 
     def _open_output_folder(self, file_path):
         """Abre a pasta onde o arquivo foi salvo."""
