@@ -140,6 +140,7 @@ GitHub.sublime-settings
 /img
 
 # Pastas
-/Selenium
-
+Selenium/
+/.gitignore
 scan.pdf
+*.ipynb
