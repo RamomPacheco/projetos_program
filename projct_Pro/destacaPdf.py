@@ -30,12 +30,27 @@ class Worker(QThread):
     finished = Signal(str)
 
     def __init__(self, pdf_pagos_path, pdf_projetos_dir, base_output_dir):
+        """
+        Inicializa o Worker com os caminhos do PDF de pagamentos, 
+        pasta de PDFs de projetos e pasta base de saida.
+
+        :param pdf_pagos_path: Caminho do PDF de pagamentos.
+        :param pdf_projetos_dir: Caminho da pasta de PDFs de projetos.
+        :param base_output_dir: Caminho da pasta base de sa da.
+        """
         super().__init__()
         self.pdf_pagos_path = pdf_pagos_path
         self.pdf_projetos_dir = pdf_projetos_dir
         self.base_output_dir = base_output_dir
 
     def run(self):
+        """
+        Executa o processamento de PDF em thread.
+
+        Chama o metodo processar_pdfs e emite o sinal finished com o caminho
+        da pasta base de saida.
+        """
+
         pasta_base = self.processar_pdfs(
             self.pdf_pagos_path, self.pdf_projetos_dir, self.base_output_dir
         )
@@ -49,25 +64,35 @@ class Worker(QThread):
         try:
             with fitz.open(pdf_path) as pdf:
                 for page_num, page in enumerate(pdf, start=1):
+                    # Extrai o texto da página
                     texto = page.get_text("text")
+                    # Pega os nomes e valores
                     pattern = r"([A-Za-zÁ-Úá-úÂ-Ûâ-ûÃ-Õã-õÇç\s]+)\s+(\d{1,3}(?:\.\d{3})*,\d+\s)"
+                    # matches retorna uma lista com os nomes e valores
                     matches = re.findall(pattern, texto)
+                    # Itera sobre os nomes e valores
                     for nome, valor in matches:
                         nome = nome.strip()
                         try:
+                            # Remove os pontos separadores de milhar
+                            # e troca a vírgula por ponto
                             valor_float = float(
                                 valor.replace(".", "").replace(",", ".")
                             )
+                            # Formata o valor com separadores de milhar
                             valor_formatado = locale.format_string(
                                 "%.2f", valor_float, grouping=True
                             )
+                            # Adiciona o nome e o valor formatado
+                            # ao dicionário
                             dados[nome] = valor_formatado
                         except ValueError:
                             print(f"Erro ao converter valor: {valor} (nome: {nome})")
-
+                    # Atualiza a barra de progresso
                     progress = ((current_stage - 1) / total_stages) + (
                         1 / total_stages
                     ) * (page_num / total_pages)
+                    # Emite o sinal com o progresso
                     self.progress_update.emit(int(progress * 100))
 
         except Exception as e:

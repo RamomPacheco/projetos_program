@@ -137,8 +137,9 @@ GitHub.sublime-settings
 
 # image files
 *.png
-\img
+/img
 
 # Pastas
-\Selenium
+/Selenium
+
 scan.pdf
