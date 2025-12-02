@@ -1,0 +1,6 @@
+FN_DADOS_PAGOS = "dados_pdf_pagos.txt"
+FN_DADOS_PROJETO = "dados_pdf_projeto.txt"
+FN_FUNC_ENCONTRADOS = "Funcionarios_encontrados.txt"
+FN_FUNC_NOMES_DIF = "Funcionarios_nomes_diferente.txt"
+FN_NOMES_NAO_DEST = "nomes_nao_destacados.txt"
+FN_NOMES_NAO_ENC = "Nomes não encontrados.txt"
